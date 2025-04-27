@@ -3,124 +3,146 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Basic Costing Shopee Calculator</title>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #f4f4f4;
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
       padding: 20px;
       text-align: center;
     }
     .container {
-      max-width: 500px;
-      margin: auto;
-      background: #fff;
+      max-width: 520px;
+      background-color: #fff;
+      margin: 0 auto;
       padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
     }
-    input {
+    label {
+      display: block;
+      text-align: left;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+    input[type="number"] {
       width: 100%;
       padding: 10px;
-      margin: 10px 0;
+      margin-top: 5px;
+      border-radius: 6px;
       border: 1px solid #ccc;
-      border-radius: 5px;
     }
     button {
-      background-color: #28a745;
-      color: white;
-      padding: 12px 20px;
-      border: none;
-      border-radius: 5px;
+      margin-top: 20px;
+      padding: 12px;
       width: 100%;
+      background-color: #30B34B;
+      color: white;
+      border: none;
+      border-radius: 6px;
       cursor: pointer;
       font-size: 16px;
     }
-    .result {
-      margin-top: 20px;
-      text-align: left;
-    }
-    .btn-secondary {
-      background-color: #007bff;
-      margin-top: 10px;
-    }
-    .btn-grey {
+    .secondary-button {
       background-color: #6c757d;
+    }
+    .result {
+      margin-top: 25px;
+      text-align: left;
     }
     footer {
       margin-top: 40px;
       font-size: 14px;
-      text-align: left;
       color: #555;
-      padding: 10px;
+      text-align: left;
     }
-    footer a {
+    a {
       color: #007bff;
-      text-decoration: none;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>📊 Basic Costing Shopee Calculator</h2>
-    <input type="number" id="harga" placeholder="Harga Jualan (RM)" step="0.01" />
-    <input type="number" id="cogs" placeholder="COGS (RM)" step="0.01" />
-    <input type="number" id="shipping" placeholder="Shipping Fee (RM)" step="0.01" />
-    <button onclick="kira()">Kira Sekarang</button>
+    <h2>🧮 Basic Costing Shopee Calculator</h2>
+
+    <label for="price">Harga Jualan (RM):</label>
+    <input type="number" id="price" step="0.01"/>
+
+    <label for="cogs">COGS (RM):</label>
+    <input type="number" id="cogs" step="0.01"/>
+
+    <label for="shipping">Shipping Fee (RM):</label>
+    <input type="number" id="shipping" step="0.01"/>
+
+    <label for="transaction">Transaction Fee (%):</label>
+    <input type="number" id="transaction" step="0.01" value="3.78"/>
+
+    <label for="service">Service Fee (%):</label>
+    <input type="number" id="service" step="0.01" value="4.86"/>
+
+    <label for="commission">Commission Fee (%):</label>
+    <input type="number" id="commission" step="0.01" value="7.02"/>
+
+    <button onclick="calculate()">Kira Sekarang</button>
+    <button class="secondary-button" onclick="clearInputs()">Kosongkan Data</button>
+
     <div class="result" id="output"></div>
-    <button class="btn-secondary" onclick="salin()">📋 Salin Keputusan</button>
-    <button class="btn-grey" onclick="window.print()">🖨️ Cetak / Simpan PDF</button>
   </div>
+
   <footer>
-    <p><strong>Nota:</strong> Calculator ini membolehkan anda menyemak untung rugi serta BE ROAS & ACOS berdasarkan harga jualan, COGS dan pecahan yuran semasa Shopee.</p>
-    <p><strong>Shopee Fee</strong> (NutraCat Shop):<br>
-    - Transaction Fee: 3.78% × (Harga Jualan + Shipping Fee Dibayar Pelanggan)<br>
-    - Service Fee: 4.86% × Harga Jualan<br>
-    - Commission Fee: 7.02% × Harga Jualan</p>
-    <p><strong>Rujukan:</strong>
+    <hr/>
+    <p><strong>Nota:</strong> Kalkulator ini mengira semua fee utama termasuk Transaction, Service dan Commission. SST 8% atas Shipping Fee telah diambil kira dalam pengiraan Transaction Fee.</p>
+    <p>Rujukan:
       <a href="https://seller.shopee.com.my/edu/article/16038" target="_blank">Transaction Fee</a>,
       <a href="https://seller.shopee.com.my/edu/article/1094" target="_blank">Service Fee</a>,
       <a href="https://seller.shopee.com.my/edu/article/6799" target="_blank">Commission Fee</a>
     </p>
-    <p>🛠️ Dibangunkan oleh <strong>Zaim</strong> | NutraCat • 2025</p>
+    <p>🛠️ Dibangunkan oleh Zaim | NutraCat • 2025</p>
   </footer>
 
   <script>
-    function kira() {
-      const harga = parseFloat(document.getElementById("harga").value);
+    function calculate() {
+      const price = parseFloat(document.getElementById("price").value);
       const cogs = parseFloat(document.getElementById("cogs").value);
       const shipping = parseFloat(document.getElementById("shipping").value);
+      const transaction = parseFloat(document.getElementById("transaction").value);
+      const service = parseFloat(document.getElementById("service").value);
+      const commission = parseFloat(document.getElementById("commission").value);
 
-      if (!harga || !cogs || !shipping) {
-        document.getElementById("output").innerHTML = "<p style='color:red;'>Sila isi semua maklumat dengan lengkap.</p>";
+      if (isNaN(price) || isNaN(cogs) || isNaN(shipping) || isNaN(transaction) || isNaN(service) || isNaN(commission)) {
+        document.getElementById("output").innerHTML = "<p style='color:red;'>Sila isi semua ruangan.</p>";
         return;
       }
 
-      const transaksi = 0.0378 * (harga + shipping);
-      const servis = 0.0486 * harga;
-      const komisen = 0.0702 * harga;
-      const jumlahFee = transaksi + servis + komisen;
+      const shippingSST = shipping * 0.08;
+      const transactionCost = ((price + shipping + shippingSST) * transaction) / 100;
+      const serviceCost = (price * service) / 100;
+      const commissionCost = (price * commission) / 100;
+      const totalShopeeFee = transactionCost + serviceCost + commissionCost;
+      const totalShopeeFeePercent = transaction + service + commission;
 
-      const profit = harga - cogs - jumlahFee;
-      const margin = (profit / harga) * 100;
-      const beRoas = (cogs + jumlahFee) / harga;
-      const beAcos = ((cogs + jumlahFee) / harga) * 100;
+      const profit = price - cogs - totalShopeeFee;
+      const margin = (profit / price) * 100;
+      const beRoas = price / profit;
+      const beAcos = (profit / price) * 100;
       const targetRoas = beRoas * 3;
 
       document.getElementById("output").innerHTML = `
+        <p><strong>SST atas Shipping:</strong> RM ${shippingSST.toFixed(2)}</p>
         <p><strong>Profit (RM):</strong> RM ${profit.toFixed(2)}</p>
         <p><strong>Profit Margin:</strong> ${margin.toFixed(2)}%</p>
         <p><strong>Break-Even ROAS:</strong> ${beRoas.toFixed(2)}</p>
         <p><strong>Break-Even ACOS:</strong> ${beAcos.toFixed(2)}%</p>
         <p><strong>Target ROAS (×3 BE):</strong> ${targetRoas.toFixed(2)}</p>
+        <p><strong>Jumlah Shopee Fee (%):</strong> ${totalShopeeFeePercent.toFixed(2)}%</p>
       `;
     }
 
-    function salin() {
-      const resultText = document.getElementById("output").innerText;
-      navigator.clipboard.writeText(resultText)
-        .then(() => alert("Keputusan telah disalin!"));
+    function clearInputs() {
+      const fields = ["price", "cogs", "shipping", "transaction", "service", "commission"];
+      fields.forEach(id => document.getElementById(id).value = "");
+      document.getElementById("output").innerHTML = "";
     }
   </script>
 </body>
